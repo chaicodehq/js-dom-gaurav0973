@@ -79,21 +79,116 @@
  *   // => 1 (only red kites shown)
  */
 export function renderKiteCard(kite) {
-  // Your code here
+	// Your code here
+
+	if (
+		kite == null ||
+		kite == undefined ||
+		!kite.name ||
+		!kite.color ||
+		!kite.size ||
+		!kite.maker ||
+		!kite.image
+	)
+		return null;
+
+	const divElement = document.createElement("div");
+	divElement.classList.add("kite-card");
+
+	const img = document.createElement("img");
+	img.src = kite.image;
+	img.alt = kite.name;
+	divElement.appendChild(img);
+
+	const h3 = document.createElement("h3");
+	h3.classList.add("kite-name");
+	h3.textContent = kite.name;
+	divElement.appendChild(h3);
+
+	const p1 = document.createElement("p");
+	p1.classList.add("kite-maker");
+	p1.textContent = `by ${kite.maker}`;
+	divElement.appendChild(p1);
+
+	const p2 = document.createElement("p");
+	p2.classList.add("kite-info");
+	p2.textContent = `${kite.size} - ${kite.color}`;
+	divElement.appendChild(p2);
+
+	return divElement;
 }
 
 export function renderGallery(container, kites) {
-  // Your code here
+	// Your code here
+
+	if (!Array.isArray(kites) || container == null || container == undefined)
+		return -1;
+
+	container.innerHTML = "";
+	let count = 0;
+
+	for (let kite of kites) {
+		const card = renderKiteCard(kite);
+		if (card !== null) {
+			container.appendChild(card);
+			count++;
+		}
+	}
+
+	return count;
 }
 
 export function filterKites(container, kites, filterFn) {
-  // Your code here
+	// Your code here
+	if (
+		container == null ||
+		container == undefined ||
+		!Array.isArray(kites) ||
+		typeof filterFn !== "function"
+	) {
+		return -1;
+	}
+
+	const filteredKites = kites.filter(filterFn);
+	return renderGallery(container, filteredKites);
 }
 
 export function sortAndRender(container, kites, sortField, order) {
-  // Your code here
+	// Your code here
+	if (container == null || container == undefined || !Array.isArray(kites)) {
+		return [];
+	}
+
+	const sortOrder = order === "desc" ? "desc" : "asc";
+	const sortedKites = [...kites];
+
+	sortedKites.sort((a, b) => {
+		const valueA = String(a?.[sortField] ?? "");
+		const valueB = String(b?.[sortField] ?? "");
+
+		if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
+		if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
+		return 0;
+	});
+
+	renderGallery(container, sortedKites);
+	return sortedKites;
 }
 
 export function renderEmptyState(container, message) {
-  // Your code here
+	// Your code here
+	if (container == null || container == undefined) {
+		return false;
+	}
+
+	if (container.children.length > 0) {
+		return false;
+	}
+
+	const emptyMessage = document.createElement("p");
+	emptyMessage.classList.add("empty-state");
+	emptyMessage.textContent = message;
+	container.appendChild(emptyMessage);
+
+	return true;
 }
